@@ -6,10 +6,12 @@ import Services from "./pages/Services";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import TextToSpeech from "./pages/TextToSpeech";
 import VoiceCloning from "./pages/VoiceCloning";
+import AdvancedVoiceStudio from "./pages/AdvancedVoiceStudio";
 import CreateVideo from "./pages/CreateVideo";
 import AIVideoStudio from "./pages/AIVideoStudio";
 import Podcast from "./pages/Podcast";
@@ -51,7 +53,7 @@ const ProtectedRoute = ({ staffOnly = false }: { staffOnly?: boolean }) => {
           <h2 className="text-2xl font-bold text-white mb-4">Account Blocked</h2>
           <p className="text-gray-400 mb-6">Your account has been blocked. Please contact the administrator for assistance.</p>
           <a 
-            href="https://wa.me/923006713668" 
+            href="https://wa.me/923023496197" 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn-primary inline-block"
@@ -88,6 +90,7 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
           </Route>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* Protected Dashboard Routes */}
           <Route element={<ProtectedRoute />}>
@@ -104,7 +107,8 @@ export default function App() {
             <Route path="/dashboard/projects" element={<Projects />} />
             <Route path="/dashboard/settings" element={<Settings />} />
             <Route path="/dashboard/stt" element={<PlaceholderPage title="Speech to Text" />} />
-            <Route path="/dashboard/cloning" element={<VoiceCloning />} />
+            <Route path="/dashboard/voice-cloning" element={<VoiceCloning />} />
+            <Route path="/dashboard/pro-studio" element={<AdvancedVoiceStudio />} />
             <Route path="/dashboard/design" element={<PlaceholderPage title="Voice Design" />} />
             <Route path="/dashboard/conversion" element={<PlaceholderPage title="Voice Conversion" />} />
             <Route path="/dashboard/podcast" element={<PlaceholderPage title="Podcast" />} />

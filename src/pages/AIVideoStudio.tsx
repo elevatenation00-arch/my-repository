@@ -13,23 +13,36 @@ const tools = [
 
 export default function AIVideoStudio() {
   return (
-    <div className="space-y-8 pb-12">
-      <div>
-        <h1 className="text-3xl font-bold text-white tracking-tight">AI Video Studio</h1>
-        <p className="text-gray-400 mt-1">Create professional AI videos in minutes.</p>
+    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-black tracking-[0.2em] text-zinc-600 uppercase mb-2">PRODUCTION STUDIO</p>
+          <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">AI Video Studio</h1>
+          <p className="text-zinc-500 text-sm font-bold mt-1">Generate professional-grade AI video sequences in real-time.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tools.map((tool) => (
+        {tools.map((tool, i) => (
           <Link
             key={tool.name}
             to={tool.path}
-            className="glass-card p-8 border-white/5 bg-zinc-900/30 hover:bg-white/5 transition-all group flex flex-col items-center text-center space-y-4"
+            className="group relative"
           >
-            <div className={cn("w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform", tool.color)}>
-              <tool.icon size={32} />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[3rem] blur-xl -z-10" />
+            <div className="glass-card p-10 border border-white/5 bg-zinc-950 hover:bg-zinc-900 transition-all flex flex-col items-center text-center space-y-6 rounded-[3rem]">
+              <div className={cn(
+                "w-20 h-20 rounded-[2rem] bg-zinc-900 flex items-center justify-center transition-all duration-500",
+                "group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-white group-hover:text-black",
+                tool.color
+              )}>
+                <tool.icon size={32} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-white font-black italic text-xl uppercase tracking-tight">{tool.name}</h3>
+                <div className="w-10 h-0.5 bg-zinc-800 mx-auto group-hover:w-20 transition-all" />
+              </div>
             </div>
-            <h3 className="text-white font-bold text-lg">{tool.name}</h3>
           </Link>
         ))}
       </div>

@@ -10,12 +10,15 @@ interface User {
   expiryDate: string;
   apiKey?: string;
   isBlocked?: boolean;
+  isApproved?: boolean;
+  favoriteVoices?: string[];
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
@@ -70,6 +73,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('token', data.token);
   };
 
+  const signup = async (email: string, password: string) => {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Signup failed');
+    }
+    const data = await res.json();
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -77,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, login, signup, logout, isLoading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -214,20 +214,21 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-6xl md:text-8xl font-display font-bold tracking-tighter text-white mb-8 leading-[0.9]"
+            className="text-6xl md:text-9xl font-display font-black tracking-tighter text-white mb-8 leading-[0.8] italic uppercase"
           >
-            Next-Gen <br />
-            <span className="gradient-text">AI Voices</span>
+            The only <br />
+            <span className="text-zinc-600">Audio AI</span> <br />
+            you'll ever <span className="text-white">need.</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto mb-12 font-bold italic tracking-tight"
           >
-            Ultra-realistic text-to-speech & voice cloning for creators, 
-            developers, and global brands. Indistinguishable from human speech.
+            One platform. All audio solutions. <br />
+            Ultra-realistic text-to-speech & voice cloning for professional creators.
           </motion.p>
 
           <motion.div
@@ -437,7 +438,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <a 
-                  href="https://wa.me/923006713668" 
+                  href="https://wa.me/923023496197" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={cn(
@@ -527,15 +528,20 @@ export default function Home() {
       <footer className="py-20 px-6 border-t border-white/10 bg-black">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-neon-blue to-neon-purple rounded-xl flex items-center justify-center shadow-lg shadow-neon-blue/20">
-                <Zap className="text-white w-6 h-6 fill-current" />
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span className="text-black font-black text-xl italic uppercase tracking-tighter">BG</span>
               </div>
-              <span className="text-2xl font-display font-bold tracking-tighter text-white">
-                BG <span className="gradient-text">LABS</span>
-              </span>
+              <div className="flex flex-col select-none">
+                <span className="text-lg font-display font-black text-white leading-none tracking-tight">
+                  BG LABS
+                </span>
+                <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-[0.2em] mt-1 italic">
+                  Voice. Innovation. Future.
+                </span>
+              </div>
             </Link>
-            <p className="text-gray-500 text-sm leading-relaxed">
+            <p className="text-zinc-500 text-sm font-bold tracking-tight">
               The world's most advanced AI voice platform. 
               Creating human-like speech for the next generation of content.
             </p>

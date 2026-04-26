@@ -31,13 +31,15 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-neon-blue to-neon-purple rounded-xl flex items-center justify-center shadow-lg shadow-neon-blue/20 group-hover:scale-110 transition-transform">
-            <Zap className="text-white w-6 h-6 fill-current" />
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span className="text-black font-black text-lg italic uppercase tracking-tighter">BG</span>
           </div>
-          <span className="text-2xl font-display font-bold tracking-tighter text-white">
-            BG <span className="gradient-text">LABS</span>
-          </span>
+          <div className="flex flex-col select-none">
+            <span className="text-sm font-display font-black text-white leading-none tracking-tight">
+              BG LABS
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

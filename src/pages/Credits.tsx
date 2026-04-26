@@ -90,7 +90,7 @@ export default function Credits() {
             </div>
 
             <button
-              onClick={() => window.open("https://wa.me/923006713668", "_blank")}
+              onClick={() => window.open("https://wa.me/923023496197", "_blank")}
               className={cn(
                 "w-full py-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2",
                 pack.popular

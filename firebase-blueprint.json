@@ -1,0 +1,66 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Application user profile and subscription status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "password": { "type": "string", "description": "Hashed password" },
+        "credits": { "type": "number" },
+        "totalCredits": { "type": "number" },
+        "plan": { "type": "string", "enum": ["Free", "Creator", "Pro", "Enterprise"] },
+        "expiryDate": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["admin", "manager", "user"] },
+        "isApproved": { "type": "boolean" },
+        "isBlocked": { "type": "boolean" },
+        "apiKey": { "type": "string" },
+        "favoriteVoices": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "email", "plan", "role"]
+    },
+    "ActivationRequest": {
+      "title": "Activation Request",
+      "description": "User requests for plan upgrades",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "plan": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      },
+      "required": ["id", "userId", "plan", "status"]
+    },
+    "Feedback": {
+      "title": "Feedback",
+      "description": "User feedback and ratings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "rating": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "message", "rating"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/activationRequests/{requestId}": {
+      "schema": "ActivationRequest",
+      "description": "Subscription activation requests"
+    },
+    "/feedback/{feedbackId}": {
+      "schema": "Feedback",
+      "description": "General application feedback"
+    }
+  }
+}

@@ -1,184 +1,187 @@
-import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { motion } from "motion/react";
-import { Check, Crown, Zap, Star, Shield, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { 
+  Check, 
+  Crown, 
+  Zap, 
+  Mic2,
+  Shield,
+  Clock,
+  ChevronRight,
+  Sparkles,
+  Type
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 
 const plans = [
   {
-    name: "Free",
-    price: "$0",
-    description: "Perfect for testing our AI voices",
+    level: 'Free',
+    price: '$0',
+    desc: 'Perfect for exploring the local synthesis engine.',
     features: [
-      "10,000 characters per month",
-      "Standard voice quality",
-      "Access to 10+ voices",
-      "Community support"
+      '1,000 characters per month',
+      'Standard XTTS v2 model',
+      'Normal quality output',
+      'Community support'
     ],
-    buttonText: "Current Plan",
-    current: true,
-    color: "gray"
+    color: 'emerald',
+    current: true
   },
   {
-    name: "Creator",
-    price: "$19",
-    description: "For content creators and hobbyists",
+    level: 'Creator',
+    price: '$19',
+    desc: 'For content creators and creative hobbyists.',
     features: [
-      "100,000 characters per month",
-      "High-quality AI voices",
-      "Access to all 100+ voices",
-      "Commercial rights",
-      "Email support"
+      '10,000 characters per month',
+      'High-fidelity cloning',
+      'Pro voice profiles',
+      'Email support'
     ],
-    buttonText: "Upgrade to Creator",
-    current: false,
-    color: "green"
+    color: 'blue'
   },
   {
-    name: "Pro",
-    price: "$49",
-    description: "For professionals and small teams",
+    level: 'Pro',
+    price: '$49',
+    desc: 'Studio-grade features for professional projects.',
     features: [
-      "500,000 characters per month",
-      "Ultra-high quality voices",
-      "Voice cloning (3 slots)",
-      "Priority support",
-      "API access"
+      '50,000 characters per month',
+      'Zero latency generation',
+      'Custom emotion tagging',
+      'API access included'
     ],
-    buttonText: "Upgrade to Pro",
-    current: false,
-    popular: true,
-    color: "blue"
+    color: 'brand',
+    popular: true
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    description: "For large scale production",
+    level: 'Enterprise',
+    price: 'Custom',
+    desc: 'Unrestricted scalability for high-volume needs.',
     features: [
-      "Unlimited characters",
-      "Custom voice cloning",
-      "Dedicated account manager",
-      "99.9% SLA",
-      "Custom integrations"
+      'Unlimited characters',
+      'Custom model training',
+      'Dedicated GPU bridge',
+      '24/7 Priority support'
     ],
-    buttonText: "Contact Sales",
-    current: false,
-    color: "purple"
+    color: 'zinc'
   }
 ];
 
 export default function Subscription() {
-  const { user } = useAuth();
+  const { user, token, refreshUser } = useAuth();
+
+  const handleUpgrade = async (plan: string) => {
+    try {
+      const res = await fetch('/api/user/subscription', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': token || ''
+        },
+        body: JSON.stringify({ plan })
+      });
+      if (res.ok) {
+        await refreshUser();
+        alert(`Successfully activated ${plan} tier!`);
+      } else {
+        throw new Error('Failed to update plan');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Subscription update failed. Please try again.');
+    }
+  };
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-12 animate-in fade-in duration-700 pb-20">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-white tracking-tight">Subscription Plans</h1>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          Choose the perfect plan for your voice generation needs. Scale your content with our state-of-the-art AI.
-        </p>
+        <p className="text-[10px] font-black tracking-[0.3em] text-brand-500 uppercase">SYNTHESIS ACCESS</p>
+        <h1 className="text-5xl font-black text-white tracking-tighter italic uppercase">Universal Tiers</h1>
+        <p className="text-zinc-500 text-sm font-bold max-w-xl mx-auto italic">Scale your neural production with unrestricted access to our local XTTS bridge.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {plans.map((plan, index) => {
-          const isCurrent = user?.plan === plan.name;
-          
-          return (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+        {plans.map((plan, i) => (
+          <motion.div
+            key={plan.level}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={cn(
+              "relative bg-zinc-950 border rounded-[2.5rem] p-8 space-y-8 flex flex-col group transition-all duration-500 hover:scale-[1.02]",
+              plan.popular ? "border-brand-500/50 shadow-2xl shadow-brand-500/10" : "border-white/5",
+              user?.plan === plan.level && "border-white/20 bg-zinc-900/50"
+            )}
+          >
+            {plan.popular && (
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-black text-[10px] font-black uppercase italic tracking-widest px-4 py-1.5 rounded-full shadow-xl">
+                MOST POPULAR
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className={cn(
+                  "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
+                  plan.color === 'emerald' && "bg-emerald-500/10 text-emerald-500",
+                  plan.color === 'blue' && "bg-blue-500/10 text-blue-500",
+                  plan.color === 'brand' && "bg-brand-500/10 text-brand-500",
+                  plan.color === 'zinc' && "bg-zinc-800 text-zinc-400"
+                )}>
+                  {plan.level}
+                </span>
+                {user?.plan === plan.level && <Check size={16} className="text-emerald-500" />}
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-black text-white italic tracking-tighter">{plan.price}</span>
+                {plan.price !== 'Custom' && <span className="text-zinc-600 text-xs font-bold uppercase tracking-widest">/mo</span>}
+              </div>
+              <p className="text-[10px] text-zinc-600 font-bold leading-relaxed">{plan.desc}</p>
+            </div>
+
+            <div className="flex-grow space-y-4 pt-6 border-t border-white/5">
+              {plan.features.map((feature, j) => (
+                <div key={j} className="flex items-start gap-3">
+                  <div className="mt-1 w-1.5 h-1.5 rounded-full bg-zinc-800 shrink-0" />
+                  <span className="text-[11px] text-zinc-400 font-medium tracking-tight italic leading-tight">{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handleUpgrade(plan.level)}
+              disabled={user?.plan === plan.level}
               className={cn(
-                "relative flex flex-col p-8 rounded-[2.5rem] border transition-all duration-500",
-                plan.popular 
-                  ? "bg-brand-500/10 border-brand-500/30 shadow-[0_0_50px_-12px_rgba(255,255,255,0.1)]" 
-                  : "bg-zinc-900/50 border-white/5 hover:border-white/10"
+                "w-full py-5 rounded-[1.5rem] font-black italic uppercase tracking-widest text-[10px] transition-all active:scale-95",
+                user?.plan === plan.level 
+                  ? "bg-zinc-900 text-zinc-600 cursor-default" 
+                  : plan.popular 
+                    ? "bg-brand-500 text-black hover:shadow-xl hover:shadow-brand-500/20" 
+                    : "bg-white text-black hover:bg-zinc-200"
               )}
             >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand-500 text-black text-[10px] font-bold uppercase tracking-widest rounded-full">
-                  Most Popular
-                </div>
-              )}
-
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  {plan.price !== "Custom" && <span className="text-gray-500 text-sm">/mo</span>}
-                </div>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  {plan.description}
-                </p>
-              </div>
-
-              <div className="flex-grow space-y-4 mb-8">
-                {plan.features.map((feature) => (
-                  <div key={feature} className="flex items-start gap-3">
-                    <div className="mt-1 p-0.5 rounded-full bg-brand-500/20 text-brand-400">
-                      <Check size={12} />
-                    </div>
-                    <span className="text-sm text-gray-400">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                disabled={isCurrent}
-                onClick={() => {
-                  if (plan.name === "Enterprise") {
-                    window.open("https://wa.me/923006713668", "_blank");
-                  } else {
-                    window.open("https://wa.me/923006713668", "_blank");
-                  }
-                }}
-                className={cn(
-                  "w-full py-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2",
-                  isCurrent
-                    ? "bg-white/5 text-gray-500 cursor-default"
-                    : plan.popular
-                    ? "bg-white text-black hover:bg-gray-200"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                )}
-              >
-                {isCurrent ? "Current Plan" : plan.buttonText}
-                {!isCurrent && <ArrowRight size={16} />}
-              </button>
-            </motion.div>
-          );
-        })}
+              {user?.plan === plan.level ? 'ACTIVE MODEL' : `Activate ${plan.level}`}
+            </button>
+          </motion.div>
+        ))}
       </div>
 
-      {/* FAQ or Additional Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-white/5">
-        <div className="flex gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center shrink-0">
-            <Shield className="text-brand-400" size={24} />
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-2">Secure Payments</h4>
-            <p className="text-sm text-gray-500">All transactions are encrypted and processed securely via Stripe.</p>
-          </div>
+      <div className="bg-zinc-950 border border-white/5 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 max-w-5xl mx-auto shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 blur-[100px] -mr-32 -mt-32 transition-all group-hover:bg-brand-500/10" />
+        
+        <div className="space-y-3 relative z-10">
+          <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Enterprise Custom Build</h3>
+          <p className="text-zinc-500 text-xs font-bold italic">Need dedicated GPU resources or self-hosted deployment? Let's engineer a solution.</p>
         </div>
-        <div className="flex gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center shrink-0">
-            <Star className="text-purple-400" size={24} />
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-2">Cancel Anytime</h4>
-            <p className="text-sm text-gray-500">No long-term contracts. You can cancel your subscription at any time.</p>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shrink-0">
-            <Zap className="text-blue-400" size={24} />
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-2">Instant Setup</h4>
-            <p className="text-sm text-gray-500">Your credits are added to your account immediately after purchase.</p>
-          </div>
-        </div>
+        
+        <a 
+          href="https://wa.me/923023496197" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="px-10 py-5 bg-white text-black font-black italic uppercase tracking-widest text-xs rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 relative z-10 shrink-0"
+        >
+          Contact Engineering
+        </a>
       </div>
     </div>
   );

@@ -24,13 +24,23 @@ interface Feedback {
   timestamp: string;
 }
 
+interface ActivationRequest {
+  id: string;
+  userId: string;
+  email: string;
+  plan: string;
+  timestamp: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
 export default function Admin() {
   const { user: currentUser, token } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [requests, setRequests] = useState<ActivationRequest[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'feedback'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'feedback' | 'requests'>('users');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   
@@ -50,15 +60,17 @@ export default function Admin() {
     if (!token) return;
     setIsLoading(true);
     try {
-      const [usersRes, feedbackRes, statsRes] = await Promise.all([
+      const [usersRes, feedbackRes, statsRes, requestsRes] = await Promise.all([
         fetch("/api/admin/users", { headers: { "Authorization": token } }),
         fetch("/api/admin/feedback", { headers: { "Authorization": token } }),
-        fetch("/api/admin/stats", { headers: { "Authorization": token } })
+        fetch("/api/admin/stats", { headers: { "Authorization": token } }),
+        fetch("/api/admin/requests", { headers: { "Authorization": token } })
       ]);
 
       if (usersRes.ok) setUsers(await usersRes.json());
       if (feedbackRes.ok) setFeedback(await feedbackRes.json());
       if (statsRes.ok) setStats(await statsRes.json());
+      if (requestsRes.ok) setRequests(await requestsRes.json());
     } catch (error) {
       console.error(error);
     } finally {
@@ -94,6 +106,32 @@ export default function Admin() {
         const err = await res.json();
         alert(err.error || "Operation failed");
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/admin/requests/approve/${id}`, {
+        method: "POST",
+        headers: { "Authorization": token }
+      });
+      if (res.ok) fetchData();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/admin/requests/reject/${id}`, {
+        method: "POST",
+        headers: { "Authorization": token }
+      });
+      if (res.ok) fetchData();
     } catch (error) {
       console.error(error);
     }
@@ -219,6 +257,20 @@ export default function Admin() {
           Users
         </button>
         <button
+          onClick={() => setActiveTab('requests')}
+          className={cn(
+            "px-6 py-2 rounded-xl text-sm font-bold transition-all relative",
+            activeTab === 'requests' ? "bg-white text-black" : "text-gray-400 hover:text-white"
+          )}
+        >
+          Requests
+          {requests.filter(r => r.status === 'pending').length > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center border-2 border-black">
+              {requests.filter(r => r.status === 'pending').length}
+            </span>
+          )}
+        </button>
+        <button
           onClick={() => setActiveTab('feedback')}
           className={cn(
             "px-6 py-2 rounded-xl text-sm font-bold transition-all",
@@ -262,6 +314,7 @@ export default function Admin() {
                           <div className="flex items-center gap-2">
                             <p className="text-xs text-gray-500 uppercase tracking-wider">{user.role}</p>
                             {user.isBlocked && <span className="text-xs text-red-500 font-bold uppercase tracking-wider">Blocked</span>}
+                            {user.isApproved === false && <span className="text-xs text-yellow-500 font-bold uppercase tracking-wider">Pending</span>}
                           </div>
                         </div>
                       </div>
@@ -310,6 +363,77 @@ export default function Admin() {
           {isLoading && (
             <div className="p-12 flex items-center justify-center">
               <Loader2 className="animate-spin text-brand-500" size={32} />
+            </div>
+          )}
+        </div>
+      ) : activeTab === 'requests' ? (
+        /* Requests List */
+        <div className="bg-zinc-900/50 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/5 bg-white/5">
+                <th className="px-6 py-4 text-sm font-semibold text-gray-400">User</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-400">Plan</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-400">Status</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-400">Date</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-400 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence mode="popLayout">
+                {requests.slice().reverse().map((req) => (
+                  <motion.tr
+                    key={req.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="border-b border-white/5 hover:bg-white/5 transition-all"
+                  >
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-white">{req.email}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-bold text-brand-400 uppercase tracking-widest">{req.plan}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn(
+                        "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter",
+                        req.status === 'pending' ? "bg-yellow-500/20 text-yellow-500" :
+                        req.status === 'approved' ? "bg-green-500/20 text-green-500" :
+                        "bg-red-500/20 text-red-500"
+                      )}>
+                        {req.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(req.timestamp).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {req.status === 'pending' && (
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => handleApprove(req.id)}
+                            className="bg-green-500 text-black px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-green-400 transition-all font-bold"
+                          >
+                            Approve
+                          </button>
+                          <button 
+                            onClick={() => handleReject(req.id)}
+                            className="bg-red-500/20 text-red-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all font-bold"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+          {requests.length === 0 && !isLoading && (
+            <div className="p-12 text-center text-gray-500 font-bold italic">
+              No activation requests found.
             </div>
           )}
         </div>
